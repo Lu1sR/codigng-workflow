@@ -1,0 +1,17 @@
+{
+  "name": "codigng-workflow",
+  "owner": { "name": "Lu1sR" },
+  "metadata": {
+    "description": "Workflows de desarrollo asistido: software factory multi-agente con separacion de roles y evidencias."
+  },
+  "plugins": [
+    {
+      "name": "software-factory",
+      "source": "./plugins/software-factory",
+      "description": "Pipeline spec -> dev -> QA independiente con evidencias -> review -> PR. El agente que desarrolla nunca es el que prueba.",
+      "version": "0.1.0",
+      "category": "development",
+      "keywords": ["software-factory", "multi-agent", "qa", "e2e", "evidence", "spec-driven"]
+    }
+  ]
+}
