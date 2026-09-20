@@ -1,10 +1,11 @@
 # codigng-workflow
 
-Marketplace de plugins de Claude Code para mi flujo de desarrollo. Hoy contiene un plugin:
+Marketplace de plugins de Claude Code para mi flujo de desarrollo. Contiene dos plugins:
 
 | Plugin | Qué hace |
 |---|---|
 | [`software-factory`](plugins/software-factory) | Pipeline spec → dev → QA independiente con evidencias → review → PR. El agente que desarrolla nunca es el que prueba. |
+| [`contextly`](plugins/contextly) | Contexto durable por repo: un store `.context/` committeado, un digest al abrir la sesión con lo que está desactualizado, y cinco comandos para mantenerlo. |
 
 ## Instalación
 
@@ -13,6 +14,7 @@ Como marketplace (recomendado):
 ```
 /plugin marketplace add Lu1sR/codigng-workflow
 /plugin install software-factory@codigng-workflow
+/plugin install contextly@codigng-workflow
 ```
 
 Para desarrollo local del plugin:
@@ -93,16 +95,21 @@ adjuntarlas al PR, subilas a mano o esperá a la v2 (ver roadmap).
 
 ## Convivencia con contextly
 
-No hay solapamiento: contextly decide qué contexto ve una sesión (CLAUDE.md apuntando a archivos
-md); la factory decide quién hace qué y con qué permisos. Los subagentes heredan CLAUDE.md, así
-que las convenciones que contextly expone llegan al dev y al reviewer sin duplicarlas. Dos cosas a
-tener en cuenta:
+Los dos plugins se reparten el trabajo sin pisarse: contextly decide qué contexto ve una sesión
+(`CLAUDE.md` apuntando a `.context/`); la factory decide quién hace qué y con qué permisos. Los
+subagentes heredan `CLAUDE.md`, así que las convenciones que contextly expone llegan al spec, al
+dev y al reviewer sin duplicarlas.
 
-- Si alguno de tus archivos de contexto describe **cómo está implementada** una feature, QA lo
-  va a leer vía CLAUDE.md y pierde parte de la caja negra. Mantené los archivos de contexto en el
-  nivel de convenciones y arquitectura, o excluí de ellos las notas de implementación.
-- Los artefactos de `.factory/runs/` son markdown y JSON planos: si contextly indexa archivos,
-  podés apuntarlo al `spec.md` y `report.md` de corridas terminadas como memoria de decisiones.
+Contextly registra un solo hook, `SessionStart`, que los subagentes no reciben. No hay hook de
+PostToolUse, de Stop ni de git, así que una corrida de la factory nunca toca el checkout
+principal por culpa de contextly, y su store vive entero en git (nada en `.gitignore` ni en
+`.git/`), por lo que cada worktree lo tiene completo. Dos cosas a tener en cuenta:
+
+- Si `architecture.md` describe **cómo está implementada** una feature, QA lo va a leer vía
+  `CLAUDE.md` y pierde parte de la caja negra. Mantené el store al nivel de arquitectura y
+  convenciones.
+- Después de mergear una rama `factory/<run-id>`, corré `/contextly:update`: el dev no edita el
+  store (el reviewer lo marcaría como fuera de alcance), así que el sync es tuyo.
 
 ## Reglas lean (menos código)
 
