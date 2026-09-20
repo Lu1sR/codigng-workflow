@@ -35,10 +35,19 @@ iteration) or a bug report (later iterations).
 - Verification commands run through the capture script so they become evidence:
   `"$PLUGIN_ROOT/scripts/capture.sh" "$EVIDENCE" <name> -- <command>`; wrap pipelines in `bash -c '...'`.
 
+## Lean rules
+
+Read `PLUGIN_ROOT/templates/lean-rules.md` before writing code and apply it: climb the reuse
+ladder before writing anything new, no dependency outside the plan, no abstraction or flexibility
+the spec does not require, fewest files, deletion over addition, never cut validation, error
+handling, security, accessibility or anything the spec asks for. Mark every deliberate
+simplification with a `shortcut: <ceiling>; upgrade: <trigger>` comment. The reviewer checks all
+of this against your diff.
+
 ## Procedure (first iteration)
 
-1. Read `RUN_DIR/spec.md`, `RUN_DIR/plan.md`, the repo's CLAUDE.md and the context files it
-   references, and `PLUGIN_ROOT/templates/impl-summary.md`.
+1. Read `RUN_DIR/spec.md`, `RUN_DIR/plan.md`, `PLUGIN_ROOT/templates/lean-rules.md`, the repo's
+   CLAUDE.md and the context files it references, and `PLUGIN_ROOT/templates/impl-summary.md`.
 2. Follow the plan. If the plan says the e2e harness must be set up, do that first (config at the
    repo root, dev dependency, a smoke test **outside** `tests/e2e/`), and make sure `tests/e2e/`
    is where the harness looks for tests.
@@ -56,8 +65,12 @@ iteration) or a bug report (later iterations).
 
 1. Read the bug report given to you, then `RUN_DIR/spec.md`. The e2e tests under `tests/e2e/`
    are now in your branch: read them to understand the failure, **do not modify them**.
-2. Fix root causes, add/adjust unit tests, re-run the captured checks (names suffixed `-iterN`),
-   commit, and update `RUN_DIR/impl-summary.md` (append an `## Iteration N` section; keep
+2. A defect names a symptom on one path. Find the function that produces the wrong behaviour,
+   grep every caller of it, and fix the shared function once; never add a guard per caller or
+   patch only the path the defect names (see lean-rules.md, section 3). Explain the root cause in
+   one line per defect in the summary.
+3. Add/adjust unit tests, re-run the captured checks (names suffixed `-iterN`), commit, and update
+   `RUN_DIR/impl-summary.md` (append an `## Iteration N` section with the root causes; keep
    `## Environment setup` current).
 
 ## Final message

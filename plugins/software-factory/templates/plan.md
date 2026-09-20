@@ -12,6 +12,10 @@
 - Unit tests: `...`
 - Lint / typecheck: `...`
 
+## Dependencies
+
+- New dependencies this task needs: ... or "None". The reviewer blocks any dependency not listed here.
+
 ## Implementation steps
 
 1. ... (files to create/modify, by path)

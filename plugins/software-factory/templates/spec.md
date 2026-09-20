@@ -39,6 +39,12 @@ Each criterion is independently testable and has a stable id. Prefer 3-8 criteri
 - Then ...
 - Verification: e2e
 
+## Design constraints
+
+Default: minimal. No abstractions, configuration or dependencies beyond what `plan.md` lists.
+If some part must be extensible on purpose, say which and why (e.g. "the exporter interface will
+get a second implementation next sprint"). Everything else is implemented in the smallest form.
+
 ## Definition of done
 
 - All AC verified by QA with evidence

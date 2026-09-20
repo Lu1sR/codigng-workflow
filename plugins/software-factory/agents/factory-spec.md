@@ -35,6 +35,12 @@ The orchestrator's prompt gives you: `PLUGIN_ROOT`, `RUN_DIR`, `REPO`, the task 
    - Every acceptance criterion is a `### AC-n: title` heading with Given/When/Then and a
      `Verification:` line. Criteria must be observable from outside (HTTP, CLI, UI, files), not
      "the function returns X".
+   - YAGNI is decided here, not by the dev: for each criterion ask whether the task actually needs
+     it or an existing behaviour already covers it. Drop criteria that only exist "in case"; put
+     them under Out of scope with the reason. Prefer fewer criteria that are all needed.
+   - **Design constraints** states what the dev must keep minimal and, only when the task truly
+     needs it, where extensibility is wanted (a public API, a plugin point, a schema that will
+     grow). Default is "minimal: no abstractions or new dependencies beyond the plan".
    - The **Interfaces** section must let QA drive the feature without reading code: exact paths,
      payloads, status codes, CLI flags, UI texts and the `data-testid` values the dev must add.
    - Out of scope is explicit.

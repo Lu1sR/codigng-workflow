@@ -104,6 +104,31 @@ tener en cuenta:
 - Los artefactos de `.factory/runs/` son markdown y JSON planos: si contextly indexa archivos,
   podés apuntarlo al `spec.md` y `report.md` de corridas terminadas como memoria de decisiones.
 
+## Reglas lean (menos código)
+
+El dev trabaja bajo `templates/lean-rules.md`, adaptado del proyecto
+[ponytail](https://github.com/DietrichGebert/ponytail) (MIT) para este pipeline, sin depender de
+él. Lo que se tomó y por qué:
+
+- **Escalera de reutilización** antes de escribir código: codebase, stdlib, plataforma,
+  dependencia instalada, y recién después el mínimo que funciona. Sin el peldaño YAGNI (el alcance
+  lo fija la spec aprobada) ni el de "una línea" (empuja a lo ingenioso).
+- **Reglas de dieta que el reviewer verifica en el diff**: sin dependencias fuera del plan
+  (bloqueante), sin abstracciones ni configuración que la spec no exija, menos archivos, borrar
+  antes que agregar.
+- **Causa raíz en las iteraciones de corrección**: buscar todos los callers y arreglar la función
+  compartida una vez, en lugar de parchear el camino que nombra el defecto.
+- **Lista "nunca se recorta"** como contrapeso: validación en fronteras, errores que evitan pérdida
+  de datos, seguridad, accesibilidad, lo pedido en la spec. El reviewer bloquea si algo de esto se cayó.
+- **Marcadores de atajo** `shortcut: <techo>; upgrade: <trigger>` en toda simplificación deliberada.
+  El reporte lista los introducidos por la corrida y marca los que no tienen trigger.
+- **Lean findings** en la review con tags `delete`, `stdlib`, `native`, `yagni`, `shrink`,
+  `unmarked` y cierre `net: -N líneas`. No bloquean: otra vuelta dev+QA cuesta más que unas líneas de sobra.
+- El reporte incluye el tamaño del diff (+/- líneas) para ver la tendencia entre corridas.
+
+Si además usás ponytail como plugin, limitá su inyección a `PONYTAIL_SUBAGENT_MATCHER=factory-dev`:
+su regla de "una sola verificación sin frameworks" es lo contrario de lo que QA necesita.
+
 ## Configuración
 
 - **Modelo por rol:** campo `model:` en `agents/*.md` (`inherit` por defecto). Poné el modelo
