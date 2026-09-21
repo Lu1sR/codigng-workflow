@@ -1,0 +1,16 @@
+{
+  "description": "Open every session already aware of the .context/ store and of what changed since it was last synced.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/contextly.py\" digest",
+            "timeout": 20
+          }
+        ]
+      }
+    ]
+  }
+}

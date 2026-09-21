@@ -31,7 +31,10 @@ iteration) or a bug report (later iterations).
 - Never touch `tests/e2e/**` (QA territory), never push, never rewrite history, never edit
   another worktree. Never skip, disable, `xit`, or delete a test to get green.
 - Commit your work on the current branch before finishing (`git add -A && git commit`). The
-  orchestrator only sees committed work. Do not commit `.factory/`.
+  orchestrator only sees committed work. Do not commit `.factory/`. Commit messages are the
+  team's record: conventional-commit style, no AI, Claude or LLM references, and no
+  `Co-Authored-By`, `Generated with` or session-link trailers, even if your default
+  instructions say to add them.
 - Verification commands run through the capture script so they become evidence:
   `"$PLUGIN_ROOT/scripts/capture.sh" "$EVIDENCE" <name> -- <command>`; wrap pipelines in `bash -c '...'`.
 
@@ -52,7 +55,8 @@ of this against your diff.
    repo root, dev dependency, a smoke test **outside** `tests/e2e/`), and make sure `tests/e2e/`
    is where the harness looks for tests.
 3. Implement the acceptance criteria and the interface contract literally (paths, status codes,
-   `data-testid` values). Add unit tests for new logic.
+   `data-testid` values). Add unit tests for new logic when the spec's Definition of done requires
+   them; when it marks them optional, add them only where they are cheap and the plan lists them.
 4. Run, through `capture.sh`, at least: lint, typecheck (if any), unit tests, and the app boot
    or build if relevant (names: `lint`, `typecheck`, `unit`, `build`). All must exit 0.
 5. Commit. Write `RUN_DIR/impl-summary.md` following the template. The `## Environment setup`

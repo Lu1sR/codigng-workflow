@@ -23,7 +23,7 @@
 
 ## Unit tests to add
 
-- ...
+- ... or "None: the spec marks unit tests optional for this task"
 
 ## Risks / things to watch
 

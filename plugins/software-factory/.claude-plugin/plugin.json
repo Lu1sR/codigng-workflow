@@ -1,7 +1,16 @@
 {
   "name": "software-factory",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Software factory pipeline: spec (human gate) -> dev agent -> independent QA agent with reproducible evidence -> reviewer -> report and PR. Separate agents per role, enforced by tool restrictions, hooks and hard path checks.",
-  "author": { "name": "Lu1sR" },
-  "keywords": ["software-factory", "multi-agent", "qa", "e2e", "evidence", "spec-driven"]
+  "author": {
+    "name": "Lu1sR"
+  },
+  "keywords": [
+    "software-factory",
+    "multi-agent",
+    "qa",
+    "e2e",
+    "evidence",
+    "spec-driven"
+  ]
 }

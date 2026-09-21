@@ -47,15 +47,23 @@ Dentro del repo donde querés la feature:
 
 1. **Spec.** `factory-spec` lee el repo (sin modificarlo) y convierte tu párrafo en `spec.md`
    con criterios de aceptación `AC-n` en Given/When/Then, un contrato de interfaces (endpoints,
-   CLI, textos y `data-testid` de UI) y `plan.md`. Si tiene dudas reales hace hasta 3 preguntas.
+   CLI, textos y `data-testid` de UI) y `plan.md`. **Siempre te pregunta dónde corren las e2e**
+   (local en el worktree de QA, o un ambiente remoto de test/staging con su URL), cómo llega ahí
+   el commit a probar (QA levanta la app, un comando de deploy que QA corre, o lo deployás vos y
+   confirmás en un gate por iteración), cómo verificar la versión deployada, qué credenciales por
+   **nombre** de variable y qué datos de prueba usar, y si los unit tests son obligatorios u
+   opcionales para esta tarea. Todo queda en la sección "Test environment" de la spec. Si además
+   tiene dudas reales sobre la implementación hace hasta 3 preguntas más.
 2. **Gate 1.** Ves la spec y la aprobás, la editás o abortás. Sin aprobación no se escribe código.
 3. **Dev.** `factory-dev` trabaja en un worktree propio (`factory/<run-id>`), implementa,
    escribe unit tests, corre lint/typecheck/unit a través de `capture.sh` (queda log + exit code
    + sha como evidencia) y commitea. No puede tocar `tests/e2e/`.
 4. **QA.** `factory-qa` es otro agente, con otro worktree (`factory/<run-id>-qa`) partiendo del
    commit del dev. Solo recibe la spec y la sección "Environment setup" del resumen del dev.
-   Instala dependencias en su worktree, escribe tests e2e derivados de los `AC-n`, los corre dos
-   veces (detecta flakiness), guarda screenshots/logs/JUnit y emite `verdict.json` con
+   Instala dependencias en su worktree, escribe tests e2e derivados de los `AC-n` y los corre
+   contra el ambiente que dice la spec (la app levantada en su worktree, o la URL remota, previa
+   verificación de que la versión deployada es el commit bajo prueba), dos veces (detecta
+   flakiness), con credenciales redactadas de la evidencia. Guarda screenshots/logs/JUnit y emite `verdict.json` con
    pass/fail por criterio y defectos con repro. Solo puede escribir bajo `tests/e2e/` y el
    directorio del run.
 5. **Bucle.** Si QA falla, el orquestador arma `bug-report-N.md` desde el veredicto y vuelve al

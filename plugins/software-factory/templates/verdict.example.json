@@ -4,6 +4,9 @@
   "tested_at": "2026-09-19T12:34:56Z",
   "overall": "fail",
   "environment": {
+    "target": "local",
+    "base_url": "http://localhost:3000",
+    "deployed_version": "not available",
     "worktree": ".factory/worktrees/20260919-1200-example/qa.wt",
     "setup_commands": ["npm ci", "npx playwright install chromium"],
     "test_command": "npx playwright test tests/e2e/example.spec.ts"

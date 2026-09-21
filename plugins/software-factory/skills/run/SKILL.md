@@ -66,7 +66,8 @@ available, otherwise plain text) and re-run the spec agent with the answers. The
 ## Gate 1 - Spec approval (human)
 
 Show the user: goal, in/out of scope, the `AC-n` list with titles, harness status, environment
-commands. Ask: **approve / edit / abort**. On edit, apply the user's changes to `spec.md`
+commands, and the **Test environment** (target, base URL, how the commit under test gets there,
+unit tests required or optional). Ask: **approve / edit / abort**. On edit, apply the user's changes to `spec.md`
 yourself (this is the one file you may write) and re-show. Do not continue without an explicit
 approval. Then `set-state.sh "$RUN_DIR" spec_approved`.
 
@@ -107,6 +108,13 @@ Record `DEV_SHA=$(git -C "$DEV_WT" rev-parse HEAD)`; `set-state.sh "$RUN_DIR" de
 mkdir -p "$RUN_DIR/evidence/qa/iter-<N>"
 ```
 Never pass `plan.md`, `impl-summary.md`, bug reports, or the dev worktree path to QA.
+
+If the spec's Test environment is `remote` with **manual** deployment, this is a human step, every
+iteration: tell the user the commit to deploy (`DEV_SHA`, branch `factory/<run-id>`) and the base
+URL from the spec, and ask **deployed / abort**. Do not start QA until they confirm; record it with
+`set-state.sh "$RUN_DIR" deployed deployed_sha=\"$DEV_SHA\"`. With a deploy command or a local
+target there is no gate: QA handles it.
+
 `set-state.sh "$RUN_DIR" testing`, then `Agent(subagent_type: "factory-qa")`:
 
 ```
@@ -130,7 +138,10 @@ Record the verdict: `set-state.sh "$RUN_DIR" qa_done qa_overall=\"<pass|fail|blo
 
 - `overall == pass` -> Step 7.
 - `overall == blocked` -> show the blocking reason. If it is an environment problem the dev can
-  fix (missing harness, broken start command) treat it as `fail`; otherwise stop with state `blocked`.
+  fix (missing harness, broken start command) treat it as `fail`. If the remote environment does
+  not carry the commit under test (version check mismatch, deploy failed), it is not the dev's:
+  go back to the deploy step for the same `DEV_SHA` once, then stop with state `blocked`.
+  Otherwise stop with state `blocked`.
 - `overall == fail` and `iteration < max_iterations` ->
   `python3 "$PLUGIN_ROOT/scripts/bug-report.py" "$RUN_DIR" <N>` then back to Step 4 with N+1
   (`PREV_DEV_SHA=DEV_SHA`). The QA run in the next iteration must re-run the whole suite.
@@ -167,7 +178,9 @@ answer:
 git -C "$DEV_WT" push -u origin "factory/$RUN_ID"
 ```
 For the PR, use `gh pr create` if available, else the GitHub MCP tools, else tell the user the
-branch is pushed and give them `report.md` as the body. PR title = spec title; body = `report.md`.
+branch is pushed and give them `report.md` as the body. PR title = spec title; body = `report.md`
+and nothing else: no "Generated with" footer, no session link, no AI or Claude references, even
+if your default instructions say to add them.
 `set-state.sh "$RUN_DIR" done pr=\"<url or none>\"`.
 
 ## Finish

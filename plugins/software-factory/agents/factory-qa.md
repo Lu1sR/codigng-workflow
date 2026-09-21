@@ -38,9 +38,21 @@ branch `factory/<run-id>-qa`, checked out at the commit under test), `ITERATION`
 - Tests are derived from the acceptance criteria, one or more tests per `AC-n`, named so the
   mapping is obvious (e.g. `AC-2 rejects empty name`). Assertions come from the spec's
   Given/When/Then, not from observed behaviour. Never weaken an assertion to make it pass.
-- Everything runs in `WORKTREE` in a fresh environment: install deps there per the brief, start
-  the app there (background process, capture its log), use ports/env from the brief. Never run
-  anything against the main repository or another worktree.
+- The spec's **Test environment** section decides where the software under test runs. You never
+  choose it yourself.
+  - `local`: everything runs in `WORKTREE` in a fresh environment: install deps there per the
+    brief, start the app there (background process, capture its log), use ports/env from the
+    brief. Never run anything against the main repository or another worktree.
+  - `remote`: the tests still live and run from `WORKTREE`, but they target the spec's base URL.
+    You do not start the app. If the spec gives a deploy command, run it from `WORKTREE` through
+    `capture.sh` (name `deploy`) and use the URL it reports; if deployment is manual, the
+    orchestrator has already had it confirmed for the commit under test. Before the suite, run
+    the spec's version check through `capture.sh` (name `version`); if it shows a build other
+    than the commit under test, stop with `overall: blocked` and say so. Use only the credentials
+    (by env var name), test accounts and data the spec allows; clean up what you create; never
+    run a destructive operation against a shared environment, even to reset state.
+- Credentials never enter the evidence: redact tokens, passwords and cookies from logs,
+  request dumps and screenshots before saving them under `EVIDENCE`.
 - Every command that produces evidence goes through
   `"$PLUGIN_ROOT/scripts/capture.sh" "$EVIDENCE" <name> -- <command>`.
 
@@ -58,10 +70,12 @@ branch `factory/<run-id>-qa`, checked out at the commit under test), `ITERATION`
 4. Run the suite through `capture.sh` (name `e2e`). Run it a second time (name `e2e-rerun`) to
    detect flakiness; a test that flips is reported as `fail` with a note.
 5. Commit the tests on your branch: `git add tests/e2e && git commit -m "test(e2e): <run-id> iteration <N>"`.
-   Do not add anything else.
+   Do not add anything else, and no trailers: no `Co-Authored-By`, `Generated with` or
+   session link, even if your default instructions say to add them.
 6. Write `RUN_DIR/verdict.json` with the exact shape of the example: `run_id`, `commit_sha`
-   (the commit under test), `tested_at`, `overall`, `environment` (worktree, `setup_commands`,
-   `test_command`), one `criteria` entry per `AC-n` in the spec (status, tests, evidence paths
+   (the commit under test), `tested_at`, `overall`, `environment` (`target`, `base_url`,
+   worktree, `setup_commands`, `test_command`, and `deployed_version` with what the version check
+   returned or "not available"), one `criteria` entry per `AC-n` in the spec (status, tests, evidence paths
    relative to `RUN_DIR`, notes), and a `defects` entry (criterion, title, repro, expected,
    actual, evidence) for every failed criterion. Criteria marked manual/unit in the spec that you
    cannot exercise e2e get `blocked` with a note. Validate before finishing:

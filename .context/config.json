@@ -1,0 +1,3 @@
+{
+  "watch": ["plugins/**", ".claude-plugin/**", "README.md", "CLAUDE.md"]
+}
