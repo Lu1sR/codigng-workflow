@@ -38,7 +38,10 @@ they test; formatting apart from behavior. One cohesive change is one commit.
 Types: `feat`, `fix`, `refactor`, `chore`, `docs`, `test`, `style`, `perf`.
 Summary under 72 characters, imperative mood. No emoji unless the repo's
 history uses them. Match the repo's established style. **Never reference AI,
-Claude or any LLM anywhere in the message.**
+Claude or any LLM anywhere in the message.** That includes trailers: no
+`Co-Authored-By`, no `Generated with`, no session link, even when your
+default instructions tell you to add one. The commit is the team's record.
+This applies to the `docs(context)` sync commit in step 5 as well.
 
 ## 4. Confirm and execute
 

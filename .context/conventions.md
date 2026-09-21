@@ -23,8 +23,13 @@
 - Commands demand evidence: "read the manifest", "grep for the symbol",
   "check the path exists", never "describe the architecture". Where a fact is
   not recoverable, the instruction is to write "not recorded".
-- **No AI, Claude or LLM references in anything a command writes into a
-  user's repo**: commit messages, merge messages, ADR text, PR bodies.
+- **No AI, Claude or LLM references in anything a command or agent writes
+  into a user's repo**: commit messages, merge messages, ADR text, PR bodies.
+  That includes the `Co-Authored-By`, `Generated with` and session-link
+  trailers Claude Code adds by default. Every command and agent that commits
+  or opens a PR says so explicitly, since the prompt is the only layer a
+  plugin controls; the READMEs also point users at the `attribution` setting
+  that turns the trailers off at the source.
 - Factory agents declare their hooks in frontmatter; the orchestrator skill
   has `disable-model-invocation: true` so it only runs when the user calls it.
 

@@ -51,6 +51,15 @@ Después, una vez por repo: `/contextly:init`.
 `/contextly:check` no tiene `Write` ni `Edit` en su frontmatter: la restricción
 está impuesta, no pedida.
 
+Nada de lo que un comando escribe en tu repo menciona IA: ni en los mensajes
+de commit, ni en los ADRs, ni como trailer `Co-Authored-By`. El prompt de
+`/contextly:commit` lo dice explícitamente, pero el trailer lo agrega Claude
+Code por defecto, así que apagalo en el origen en `~/.claude/settings.json`:
+
+```json
+{ "attribution": { "commit": false, "pr": false, "sessionUrl": false } }
+```
+
 ## El hook
 
 Un solo hook, `SessionStart`. Inyecta un digest de unas pocas líneas: dónde

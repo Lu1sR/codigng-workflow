@@ -11,7 +11,7 @@
       "name": "software-factory",
       "source": "./plugins/software-factory",
       "description": "Pipeline spec -> dev -> QA independiente con evidencias -> review -> PR. El agente que desarrolla nunca es el que prueba.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "category": "development",
       "keywords": [
         "software-factory",
@@ -26,7 +26,7 @@
       "name": "contextly",
       "source": "./plugins/contextly",
       "description": "Contexto durable por repo: store .context/ committeado, digest de SessionStart con lo que esta desactualizado, y comandos init/update/decide/check/commit.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "development",
       "keywords": [
         "context",

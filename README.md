@@ -138,6 +138,10 @@ su regla de "una sola verificación sin frameworks" es lo contrario de lo que QA
 
 ## Configuración
 
+- **Sin atribución de IA:** el dev y QA commitean y el orquestador abre el PR sin trailers
+  `Co-Authored-By` ni "Generated with". Los prompts lo dicen, pero Claude Code los agrega por
+  defecto, así que apagalos en el origen en `~/.claude/settings.json`:
+  `{ "attribution": { "commit": false, "pr": false, "sessionUrl": false } }`.
 - **Modelo por rol:** campo `model:` en `agents/*.md` (`inherit` por defecto). Poné el modelo
   más capaz en `factory-spec` y `factory-reviewer` si querés.
 - **Iteraciones:** `max_iterations` en `run.json` (default 3). Se puede editar después del init.

@@ -167,7 +167,9 @@ answer:
 git -C "$DEV_WT" push -u origin "factory/$RUN_ID"
 ```
 For the PR, use `gh pr create` if available, else the GitHub MCP tools, else tell the user the
-branch is pushed and give them `report.md` as the body. PR title = spec title; body = `report.md`.
+branch is pushed and give them `report.md` as the body. PR title = spec title; body = `report.md`
+and nothing else: no "Generated with" footer, no session link, no AI or Claude references, even
+if your default instructions say to add them.
 `set-state.sh "$RUN_DIR" done pr=\"<url or none>\"`.
 
 ## Finish

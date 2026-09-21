@@ -58,7 +58,8 @@ branch `factory/<run-id>-qa`, checked out at the commit under test), `ITERATION`
 4. Run the suite through `capture.sh` (name `e2e`). Run it a second time (name `e2e-rerun`) to
    detect flakiness; a test that flips is reported as `fail` with a note.
 5. Commit the tests on your branch: `git add tests/e2e && git commit -m "test(e2e): <run-id> iteration <N>"`.
-   Do not add anything else.
+   Do not add anything else, and no trailers: no `Co-Authored-By`, `Generated with` or
+   session link, even if your default instructions say to add them.
 6. Write `RUN_DIR/verdict.json` with the exact shape of the example: `run_id`, `commit_sha`
    (the commit under test), `tested_at`, `overall`, `environment` (worktree, `setup_commands`,
    `test_command`), one `criteria` entry per `AC-n` in the spec (status, tests, evidence paths

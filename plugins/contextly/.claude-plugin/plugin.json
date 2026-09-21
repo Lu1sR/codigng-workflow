@@ -1,7 +1,15 @@
 {
   "name": "contextly",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Keep a repository's durable context (what it is, how it is wired, why) accurate over time: a committed .context/ store, a SessionStart digest that says what is stale, and five commands to maintain it.",
-  "author": { "name": "Lu1sR" },
-  "keywords": ["context", "documentation", "architecture", "adr", "memory"]
+  "author": {
+    "name": "Lu1sR"
+  },
+  "keywords": [
+    "context",
+    "documentation",
+    "architecture",
+    "adr",
+    "memory"
+  ]
 }
