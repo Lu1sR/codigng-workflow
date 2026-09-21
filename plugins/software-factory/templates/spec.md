@@ -23,6 +23,22 @@ Everything QA needs to exercise the feature WITHOUT reading the implementation:
 - UI: routes, visible texts, roles/labels or `data-testid` values the dev MUST provide
 - Data setup: fixtures, seed commands, env vars, feature flags
 
+## Test environment
+
+Where QA runs the e2e tests and how the commit under test gets there. Decided with the user
+at spec time, never assumed. QA follows this section literally.
+
+- Target: `local` | `remote`
+- Base URL: `http://localhost:<port>` (local, from plan.md) or `https://<staging host>` (remote)
+- How the commit under test gets there:
+  - local: QA installs and starts the app in its own worktree (default)
+  - remote, `deploy-command`: `<command QA runs from its worktree, e.g. a preview deploy>`, and how to read back the deployed URL/version
+  - remote, `manual`: a human deploys `dev_sha` and confirms at a gate before each QA iteration
+- Version check: how QA confirms the deployed build is `dev_sha` (health/version endpoint, build header, commit in the footer) or "not available"
+- Credentials: env var **names** only (never values) and where QA reads them (`.env.test`, shell env, a secrets file outside the repo)
+- Test data: seed/fixtures or test accounts to use; what QA may create; what it must clean up
+- Constraints: shared environment rules (no destructive operations, no data of real users, rate limits, time windows)
+
 ## Acceptance criteria
 
 Each criterion is independently testable and has a stable id. Prefer 3-8 criteria.
@@ -47,8 +63,8 @@ get a second implementation next sprint"). Everything else is implemented in the
 
 ## Definition of done
 
-- All AC verified by QA with evidence
-- Unit tests for new logic, existing test suite still green
+- All AC verified by QA with evidence, in the test environment above
+- Unit tests: `required for new logic` | `optional` (decided with the user); existing test suite still green either way
 - Lint / typecheck green
 - No changes outside scope
 

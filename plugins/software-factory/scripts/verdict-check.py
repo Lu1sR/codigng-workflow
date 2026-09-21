@@ -66,6 +66,8 @@ def main():
     env = v.get("environment") or {}
     if not env.get("setup_commands"): problems.append("environment.setup_commands is empty (must be reproducible)")
     if not env.get("test_command"): problems.append("environment.test_command missing")
+    if env.get("target") not in ("local", "remote"): problems.append("environment.target must be local|remote (from the spec's Test environment)")
+    if env.get("target") == "remote" and not env.get("base_url"): problems.append("environment.base_url missing for a remote target")
     if problems:
         print("verdict-check: FAIL", file=sys.stderr)
         for p in problems: print(f"  - {p}", file=sys.stderr)

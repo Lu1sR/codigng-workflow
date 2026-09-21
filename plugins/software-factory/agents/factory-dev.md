@@ -55,7 +55,8 @@ of this against your diff.
    repo root, dev dependency, a smoke test **outside** `tests/e2e/`), and make sure `tests/e2e/`
    is where the harness looks for tests.
 3. Implement the acceptance criteria and the interface contract literally (paths, status codes,
-   `data-testid` values). Add unit tests for new logic.
+   `data-testid` values). Add unit tests for new logic when the spec's Definition of done requires
+   them; when it marks them optional, add them only where they are cheap and the plan lists them.
 4. Run, through `capture.sh`, at least: lint, typecheck (if any), unit tests, and the app boot
    or build if relevant (names: `lint`, `typecheck`, `unit`, `build`). All must exit 0.
 5. Commit. Write `RUN_DIR/impl-summary.md` following the template. The `## Environment setup`

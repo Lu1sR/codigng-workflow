@@ -31,6 +31,17 @@ user's `.gitignore` is never edited. Every agent starts with empty context;
 QA only receives the spec and the "Environment setup" section of the dev's
 summary, so it tests black-box.
 
+**Test environment is decided at spec time, never assumed.** `factory-spec` looks for
+evidence (task text, README, CI, hosting config) and then asks the user where the e2e tests
+run (`local` in QA's worktree, or `remote` against a test/staging URL), how the commit under
+test gets there (QA starts the app, a deploy command QA runs from its worktree, or a human
+deploys and confirms at a per-iteration gate the orchestrator enforces), how to verify the
+deployed version, which credentials by env var name and which test data to use, and whether
+unit tests are required or optional for the task. The spec's **Test environment** section
+carries the answers; QA follows it literally, runs the version check before the suite, blocks
+on a mismatch, and redacts credentials from evidence. `plugins/software-factory/scripts/verdict-check.py` requires
+`environment.target` and, for remote, `environment.base_url`.
+
 **Evidence.** Every verification command runs through `plugins/software-factory/scripts/capture.sh`,
 which stores log, exit code and commit sha under `.factory/runs/<run-id>/evidence/`.
 `plugins/software-factory/scripts/report.py` builds the traceability criterion → test → evidence that
