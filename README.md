@@ -9,7 +9,9 @@ Marketplace de plugins de Claude Code para mi flujo de desarrollo. Contiene dos 
 
 ## Instalación
 
-Como marketplace (recomendado):
+Requisitos en la máquina: `git` y `python3`. Opcional: `jq`. Nada más se instala.
+
+**1. Agregá el marketplace e instalá los plugins**, dentro de Claude Code:
 
 ```
 /plugin marketplace add Lu1sR/codigng-workflow
@@ -17,26 +19,78 @@ Como marketplace (recomendado):
 /plugin install contextly@codigng-workflow
 ```
 
-Para desarrollo local del plugin:
+**2. Apagá la atribución de IA en commits y PRs.** Los prompts de los dos plugins la prohíben,
+pero Claude Code agrega el trailer `Co-Authored-By` por defecto, así que apagalo en el origen.
+En `~/.claude/settings.json`:
+
+```json
+{ "attribution": { "commit": false, "pr": false, "sessionUrl": false } }
+```
+
+**3. Por cada repo donde quieras contexto durable**, abrilo con Claude Code y corré una vez:
+
+```
+/contextly:init
+```
+
+Eso escribe `.context/` (cuatro documentos, config y estado, todo committeado) y una línea en
+`CLAUDE.md`. Commiteá ambos; a partir de ahí cada sesión arranca con un digest de qué está
+desactualizado, y los agentes de la factory leen el store a través de `CLAUDE.md`.
+
+**Actualizar:** `/plugin marketplace update codigng-workflow` y después
+`/plugin update software-factory@codigng-workflow` (ídem `contextly`).
+
+**Verificar:** `claude plugin list` muestra los dos plugins; `/hooks` muestra un solo hook de
+contextly (`SessionStart`); al abrir una sesión en un repo con `.context/` aparece el digest una vez.
+
+**Desarrollo local de un plugin**, sin pasar por el marketplace:
 
 ```bash
 claude --plugin-dir ./plugins/software-factory
+claude --plugin-dir ./plugins/contextly
 ```
 
-Requisitos en la máquina: `git`, `python3` (los scripts de verificación) y opcionalmente `jq`.
+## Comandos
 
-## Uso rápido
+### software-factory
 
 Dentro del repo donde querés la feature:
+
+| Comando | Hace |
+|---|---|
+| `/software-factory:run <párrafo o ruta a .md>` | Corre el pipeline completo: spec → gate → dev → QA → review → reporte → gate |
+| `/software-factory:status` | Estado de las corridas en `.factory/runs/` |
+| `/software-factory:clean <run-id> [--delete-branches]` | Borra los worktrees de una corrida (y sus ramas si lo pedís) |
 
 ```
 /software-factory:run Agregar endpoint POST /items que valide nombre no vacío y devuelva 201
 /software-factory:run docs/tareas/mi-tarea.md
-/software-factory:status
-/software-factory:clean <run-id> --delete-branches
 ```
 
-## Cómo funciona
+### contextly
+
+| Comando | Hace |
+|---|---|
+| `/contextly:init` | Releva el repo y escribe el store, una vez por repo |
+| `/contextly:update` | Corrige los documentos por lo que cambió desde el último sync; corrélo al terminar una tarea o después de mergear una rama `factory/*` |
+| `/contextly:decide <decisión>` | Agrega un ADR a `decisions.md` |
+| `/contextly:check` | Auditoría de solo lectura: rutas rotas y un pase de juicio sobre cada documento |
+| `/contextly:commit [mensaje]` | Commits limpios por unidad de trabajo, y sincroniza el store en el mismo momento |
+
+Sin sesión, desde la terminal (la ruta la muestra `claude plugin list`):
+
+```bash
+python3 ~/.claude/plugins/cache/codigng-workflow/contextly/*/scripts/contextly.py status   # fresh o STALE, y qué cambió
+python3 ~/.claude/plugins/cache/codigng-workflow/contextly/*/scripts/contextly.py check    # toda ruta nombrada debe existir
+```
+
+Para ver todos los repos con store:
+
+```bash
+find ~/Documents/trabajo -maxdepth 4 -path '*/.context/index.md' | sed 's#/.context/index.md##'
+```
+
+## Cómo funciona la factory
 
 ```
  párrafo ──► factory-spec ──► [GATE 1: aprobás la spec] ──► factory-dev ──► factory-qa ──┐
