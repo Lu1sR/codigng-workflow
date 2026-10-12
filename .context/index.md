@@ -5,13 +5,15 @@ A Claude Code plugin marketplace for one development workflow. Two plugins:
 agents with evidence at every step; `contextly` keeps each repository's
 durable context (what it is, how it is wired, why) accurate over time. They
 are designed to run together: the factory's agents read the context store the
-other plugin maintains.
+other plugin maintains. A third, optional plugin, `workflow-ui`, is a mod (a
+hooks module) that shows both in the session and changes nothing.
 
 ## Stack
 
 Markdown for commands, agents and skills; Bash for the factory's scripts and
 hooks; Python 3 (stdlib only) for the factory's checkers and the contextly
-engine. Nothing to install beyond `git` and `python3`.
+engine; TypeScript (TSX) for the `workflow-ui` mod, run by Claude Code itself
+with no build step. Nothing to install beyond `git` and `python3`.
 
 ## Layout
 
@@ -28,6 +30,10 @@ engine. Nothing to install beyond `git` and `python3`.
 | `plugins/contextly/commands/` | `init`, `update`, `decide`, `check`, `commit` |
 | `plugins/contextly/hooks/hooks.json` | Registers the one hook, SessionStart |
 | `plugins/contextly/scripts/contextly.py` | Engine: `digest`, `status`, `check` |
+| `plugins/workflow-ui/` | The optional mod: band, pane, status line |
+| `plugins/workflow-ui/hooks/register.tsx` | Hooks module: polls, subagent observation, drawing, `/factory` |
+| `plugins/workflow-ui/hooks/runs.ts` | Pure helpers: run files and tool calls to views |
+| `plugins/workflow-ui/types/index.d.ts` | The mod's `$.state` contract |
 | `.context/` | This repository's own context store |
 
 ## Entry points
@@ -40,6 +46,8 @@ engine. Nothing to install beyond `git` and `python3`.
   `/software-factory:clean <run-id>`
 - Contextly: `/contextly:init` once per repo, then `/contextly:update`,
   `/contextly:decide`, `/contextly:check`, `/contextly:commit`
+- workflow-ui (optional): `/plugin install workflow-ui@codigng-workflow`, then
+  `/factory` or `/factory agents`; the band and status line need no command
 - Contextly without a session: `python3 plugins/contextly/scripts/contextly.py status`
   and `... check`, both with `--json`
 

@@ -1,0 +1,16 @@
+{
+  "name": "workflow-ui",
+  "version": "0.1.0",
+  "description": "Read-only view of software-factory runs and contextly freshness: a band at each human gate, a /factory pane with runs, criteria and live subagent activity, and a status line.",
+  "author": {
+    "name": "Lu1sR"
+  },
+  "keywords": [
+    "software-factory",
+    "contextly",
+    "mod",
+    "pane",
+    "status-line"
+  ],
+  "types": "./types/index.d.ts"
+}

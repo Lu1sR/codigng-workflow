@@ -105,3 +105,44 @@ removed stays in the Contextly repository's history (its last full commit is
 `ecd7c4f`), including the six decision records that led here.
 
 ---
+
+## ADR-004 — Show the workflow through one optional, read-only mod
+
+**Date:** 2026-10-12
+**Status:** Accepted
+**Affects:** `plugins/workflow-ui/`, `plugins/software-factory/skills/run/SKILL.md`, `.claude-plugin/marketplace.json`
+
+**Context.** A factory run waits on a person three times (spec approval, a
+manual deploy, push/PR), and that wait was only visible as the orchestrator's
+text in the transcript. Seeing a run meant calling `/software-factory:status`
+again and again, and a subagent showed as one collapsed line until it ended,
+so a guard refusing the dev or QA surfaced only in the final summary.
+Contextly's staleness showed once, at session start. Claude Code's function
+hooks (mods) can draw a band, a pane and a status line and observe every
+subagent's tool calls.
+
+**Decision.** Add `workflow-ui`, a third plugin of the marketplace and
+optional: one hooks module that polls `.factory/runs/` and
+`contextly.py status --json`, observes `agent.spawn`, `tool.call` and
+`turn.complete`, and draws a band at each human state, a `/factory` pane with
+a runs tab and an agents tab, and a status line. It writes nothing and always
+passes events through unchanged. The band, pane and status line share one
+module because they share one reader of the run files; the subagent view is a
+tab of the same pane for the same reason. The factory gains an explicit
+`awaiting_deploy` state so the manual deploy wait is detected exactly instead
+of inferred from the spec.
+
+**Alternatives considered.**
+- One mod per surface — the three would read and poll the same files three times.
+- Fold guards (no AI trailers in commits, append-only `decisions.md`) into the same mod — they block calls, a different risk from a view, and should be switchable on their own.
+- Infer the deploy gate from `dev_done` plus the spec's Test environment — a heuristic over free text, where one `plugins/software-factory/scripts/set-state.sh` call makes it exact.
+- Build it into `software-factory` — a session without mod support would carry code it cannot run; as a separate plugin the other two work unchanged without it.
+
+**Consequences.** The gates are visible without reading the transcript, and a
+guard refusal is visible while the subagent runs. The mod needs a Claude Code
+build with function hooks; without one it is simply not installed. Because it
+writes nothing, it cannot affect the factory's main-checkout invariant or
+contextly's freshness (the problem behind ADR-003). The guards stay a
+separate, future plugin.
+
+---

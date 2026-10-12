@@ -47,6 +47,21 @@
 - Never `.strip()` git output that carries meaning in leading whitespace
   (`git status --porcelain`).
 
+## Mods
+
+- A mod is a plugin whose hooks manifest (`plugins/workflow-ui/hooks/hooks.json`)
+  names one hooks module. Its `$.state` values are declared in a contract
+  (`plugins/workflow-ui/types/index.d.ts`) that the plugin manifest names
+  under `types`.
+- Every function that receives `$` is declared at the top level of the
+  module; `claude plugin validate` refuses `$` passed anywhere else.
+- Logic that does not need `$` lives in a separate pure module so tests reach
+  it without the engine.
+- Observation hooks always call `next` with the event unchanged and carry a
+  `.catch(($, e, next) => next(e))`, so the mod cannot block or alter a call.
+- User-facing text in a mod is Spanish, like the READMEs; code comments are
+  English.
+
 ## Documents
 
 - The context store is written for whoever opens the repo next, human or
@@ -68,7 +83,13 @@ for f in .claude-plugin/marketplace.json plugins/*/.claude-plugin/plugin.json pl
 done
 python3 plugins/contextly/scripts/contextly.py check
 python3 plugins/contextly/scripts/contextly.py status
+claude plugin validate plugins/workflow-ui
+claude plugin test plugins/workflow-ui
 ```
+
+Type-checking the mod needs a TypeScript config kept outside the plugin folder
+(the header of the engine's API declaration file carries one), with `include`
+naming that file and the mod's hooks, types and tests folders.
 
 `check` reporting a broken path is a defect, not a warning: either the
 document is wrong or the rename was incomplete. Exercising the hook by hand:

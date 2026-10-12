@@ -42,6 +42,11 @@ carries the answers; QA follows it literally, runs the version check before the 
 on a mismatch, and redacts credentials from evidence. `plugins/software-factory/scripts/verdict-check.py` requires
 `environment.target` and, for remote, `environment.base_url`.
 
+**Run state.** `plugins/software-factory/scripts/set-state.sh` keeps `state` and a `history` in
+`.factory/runs/<run-id>/run.json`. Three states mean a human is awaited: `spec_ready` (gate 1),
+`awaiting_deploy` (the manual deploy step of a remote test environment) and `review_done`
+(gate 2). `workflow-ui` keys its band on exactly these.
+
 **Evidence.** Every verification command runs through `plugins/software-factory/scripts/capture.sh`,
 which stores log, exit code and commit sha under `.factory/runs/<run-id>/evidence/`.
 `plugins/software-factory/scripts/report.py` builds the traceability criterion → test → evidence that
@@ -91,6 +96,31 @@ breaks the session it is helping.
 names in an inline code span still exists. Fenced blocks are skipped; a token
 is judged only when it has a known extension or its first segment exists, so
 `origin/main` and `feat/<name>` stay out of the results.
+
+## workflow-ui
+
+An optional mod: one hooks module, `plugins/workflow-ui/hooks/register.tsx`, loaded
+by Claude Code's function-hooks engine, with its pure logic in
+`plugins/workflow-ui/hooks/runs.ts`. It is read-only by construction:
+
+- A `$.clock.every` poll reads the newest five run directories under
+  `.factory/runs/` every 3 seconds, and `contextly.py status --json` every 30
+  (the repository's own copy, else the newest installed one). Results go to
+  `$.state` (contract in `plugins/workflow-ui/types/index.d.ts`), which the
+  drawings read.
+- Hooks on `agent.spawn`, `tool.call` and `turn.complete` record each
+  subagent's type, status and last calls, keyed by the `agentId` every
+  subagent event carries. They always call `next` with the event unchanged and
+  have a `.catch` that does the same, so a failure in the mod never blocks or
+  alters a call. A call refused by a factory guard comes back as an error
+  naming the guard, and is shown as blocked.
+- It draws an `AbovePrompt` band while a run waits at one of the three human
+  states, a `Pane` (`/factory`) with a runs tab and an agents tab, and a status
+  line; it toasts and notifies once per run and gate.
+
+It never writes a file, so the factory's "main checkout unchanged" check and
+contextly's freshness are unaffected; nothing it shows reaches an agent, so
+QA's black box holds.
 
 ## How the two coexist
 

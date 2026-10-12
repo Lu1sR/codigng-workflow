@@ -1,11 +1,13 @@
 # codigng-workflow
 
-Marketplace de plugins de Claude Code para mi flujo de desarrollo. Contiene dos plugins:
+Marketplace de plugins de Claude Code para mi flujo de desarrollo. Contiene dos plugins y un mod
+opcional para verlos desde la sesión:
 
 | Plugin | Qué hace |
 |---|---|
 | [`software-factory`](plugins/software-factory) | Pipeline spec → dev → QA independiente con evidencias → review → PR. El agente que desarrolla nunca es el que prueba. |
 | [`contextly`](plugins/contextly) | Contexto durable por repo: un store `.context/` committeado, un digest al abrir la sesión con lo que está desactualizado, y cinco comandos para mantenerlo. |
+| [`workflow-ui`](plugins/workflow-ui) | Opcional. Banda en cada gate humana de la factory, panel `/factory` con corridas, criterios y subagentes en vivo, y línea de estado con la frescura del contexto. Solo lee. |
 
 ## Instalación
 
@@ -17,6 +19,7 @@ Requisitos en la máquina: `git` y `python3`. Opcional: `jq`. Nada más se insta
 /plugin marketplace add Lu1sR/codigng-workflow
 /plugin install software-factory@codigng-workflow
 /plugin install contextly@codigng-workflow
+/plugin install workflow-ui@codigng-workflow   # opcional
 ```
 
 **2. Apagá la atribución de IA en commits y PRs.** Los prompts de los dos plugins la prohíben,
@@ -48,6 +51,7 @@ contextly (`SessionStart`); al abrir una sesión en un repo con `.context/` apar
 ```bash
 claude --plugin-dir ./plugins/software-factory
 claude --plugin-dir ./plugins/contextly
+claude --plugin-dir ./plugins/workflow-ui
 ```
 
 ## Comandos
@@ -89,6 +93,15 @@ Para ver todos los repos con store:
 ```bash
 find ~/Documents/trabajo -maxdepth 4 -path '*/.context/index.md' | sed 's#/.context/index.md##'
 ```
+
+### workflow-ui
+
+| Comando | Hace |
+|---|---|
+| `/factory` | Abre el panel en la pestaña Corridas |
+| `/factory agents` | Abre el panel en la pestaña Agentes: qué hace cada subagente y qué le bloquearon los guards |
+
+La banda de gates y la línea de estado aparecen solas. Detalle en [`plugins/workflow-ui`](plugins/workflow-ui).
 
 ## Cómo funciona la factory
 

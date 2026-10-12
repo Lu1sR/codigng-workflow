@@ -4,14 +4,14 @@
     "name": "Lu1sR"
   },
   "metadata": {
-    "description": "Workflows de desarrollo asistido: software factory multi-agente con separacion de roles y evidencias, y contextly para mantener el contexto durable de cada repo."
+    "description": "Workflows de desarrollo asistido: software factory multi-agente con separacion de roles y evidencias, y contextly para mantener el contexto durable de cada repo, y workflow-ui para ver ambos desde la sesion."
   },
   "plugins": [
     {
       "name": "software-factory",
       "source": "./plugins/software-factory",
       "description": "Pipeline spec -> dev -> QA independiente con evidencias -> review -> PR. El agente que desarrolla nunca es el que prueba.",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "category": "development",
       "keywords": [
         "software-factory",
@@ -34,6 +34,20 @@
         "architecture",
         "adr",
         "memory"
+      ]
+    },
+    {
+      "name": "workflow-ui",
+      "source": "./plugins/workflow-ui",
+      "description": "Opcional. Vista de solo lectura de la factory y de contextly: banda en cada gate humana, panel /factory con corridas, criterios y subagentes en vivo, y linea de estado.",
+      "version": "0.1.0",
+      "category": "development",
+      "keywords": [
+        "software-factory",
+        "contextly",
+        "mod",
+        "pane",
+        "status-line"
       ]
     }
   ]

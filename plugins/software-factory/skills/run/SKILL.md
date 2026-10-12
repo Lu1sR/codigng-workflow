@@ -110,8 +110,9 @@ mkdir -p "$RUN_DIR/evidence/qa/iter-<N>"
 Never pass `plan.md`, `impl-summary.md`, bug reports, or the dev worktree path to QA.
 
 If the spec's Test environment is `remote` with **manual** deployment, this is a human step, every
-iteration: tell the user the commit to deploy (`DEV_SHA`, branch `factory/<run-id>`) and the base
-URL from the spec, and ask **deployed / abort**. Do not start QA until they confirm; record it with
+iteration: first `set-state.sh "$RUN_DIR" awaiting_deploy`, then tell the user the commit to
+deploy (`DEV_SHA`, branch `factory/<run-id>`) and the base URL from the spec, and ask
+**deployed / abort**. Do not start QA until they confirm; record it with
 `set-state.sh "$RUN_DIR" deployed deployed_sha=\"$DEV_SHA\"`. With a deploy command or a local
 target there is no gate: QA handles it.
 
